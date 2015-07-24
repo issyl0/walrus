@@ -18,8 +18,18 @@ def get_requester_name(requester_id):
 
 tickets = response['tickets']
 
+slack_data = "Here are your Zendesk tickets in order of most recently updated:\n"
 for ticket in tickets:
-    print "{0} – {1} – {2}".format(ticket['id'],
-                                   ticket['subject'],
-                                   get_requester_name(ticket['requester_id']))
+    slack_data += "<{0}{1}|{1}> – {2} by {3}\n".format("https://govuk.zendesk.com/agent/tickets/",
+                                                      ticket['id'],
+                                                      ticket['subject'],
+                                                      get_requester_name(ticket['requester_id']))
 
+slack_payload = {"channel": "#custom", "username": "walrus", "text": slack_data}
+
+post_req = requests.post(os.environ['SLACK_WEBHOOK_URL'], json=slack_payload)
+
+if post_req.status_code == 200:
+  print "Posted."
+else:
+  print "Failed: {0}, {1}".format(post_req.status_code,post_req.text)
