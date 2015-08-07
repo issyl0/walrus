@@ -10,7 +10,7 @@ parser.add_argument("team_zendesk_id", help="team zendesk id", type=int)
 parser.add_argument("slack_channel", help="team slack channel: #name", type=str)
 args = parser.parse_args()
 
-zendesk_view_url = 'https://govuk.zendesk.com/api/v2/views/{0}/tickets.json?sort_by=updated_requester'.format(args.team_zendesk_id)
+zendesk_view_url = 'https://govuk.zendesk.com/api/v2/views/{0}/tickets.json?sort_by=updated_requester,asc'.format(args.team_zendesk_id)
 response = requests.get(zendesk_view_url,
                         auth=(os.environ['ZENDESK_USERNAME'],
                               os.environ['ZENDESK_PASSWORD'])
