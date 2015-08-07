@@ -25,8 +25,8 @@ def get_requester_name(requester_id):
 
 tickets = response['tickets']
 
-slack_data = "Here are your Zendesk tickets in order of most recently updated:\n"
-for ticket in tickets:
+slack_data = "Here are your Zendesk tickets in order of most recently updated (limited to 5):\n"
+for ticket in tickets[0:6]:
     # Link to the specific ticket when displaying its ID.
     slack_data += "<{0}{1}|{1}> – {2} by {3}\n".format("https://govuk.zendesk.com/agent/tickets/",
                                                       ticket['id'],
