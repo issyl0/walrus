@@ -1,12 +1,17 @@
 #!/usr/bin/python
 # coding: utf-8
 
-import os, requests
+import os, requests, argparse
 
-# Get the tickets, sorted by ones last updated by the requester from
-# the GOV.UK Custom team's queue.
-custom_formats_view_url = 'https://govuk.zendesk.com/api/v2/views/58638891/tickets.json?sort_by=updated_requester'
-response = requests.get(custom_formats_view_url,
+# Make this script generic and able to be used by all GOV.UK teams.
+# $ python walrus.py ZENDESK_ID #SLACK_CHANNEL
+parser = argparse.ArgumentParser(description='Team config for the Zendesk Slack bot.')
+parser.add_argument("team_zendesk_id", help="team zendesk id", type=int)
+parser.add_argument("slack_channel", help="team slack channel: #name", type=str)
+args = parser.parse_args()
+
+zendesk_view_url = 'https://govuk.zendesk.com/api/v2/views/{0}/tickets.json?sort_by=updated_requester'.format(args.team_zendesk_id)
+response = requests.get(zendesk_view_url,
                         auth=(os.environ['ZENDESK_USERNAME'],
                               os.environ['ZENDESK_PASSWORD'])
                        ).json()
@@ -29,7 +34,7 @@ for ticket in tickets:
                                                       get_requester_name(ticket['requester_id']))
 
 # Send the message to Slack.
-slack_payload = {"channel": "#custom", "username": "walrus", "text": slack_data}
+slack_payload = {"channel": args.slack_channel, "username": "walrus", "text": slack_data}
 post_req = requests.post(os.environ['SLACK_WEBHOOK_URL'], json=slack_payload)
 
 if post_req.status_code == 200:
