@@ -21,7 +21,11 @@ def get_and_show_tickets_in_slack(args):
 
     tickets = response['tickets']
 
-    slack_data = "Here are your Zendesk tickets in order of most recently updated (limited to 5 :sunny:):\n"
+    if tickets.count > 5:
+        slack_data = "Here are your Zendesk tickets (limited to 5), with the most recently updated first:\n"
+    else:
+        slack_data = "Here are your Zendesk tickets, with the most recently updated first:\n"
+
     for ticket in tickets[:5]:
         # Link to the specific ticket when displaying its ID.
         slack_data += "<{0}{1}|{1}> – {2} by {3}\n".format("https://govuk.zendesk.com/agent/tickets/",
